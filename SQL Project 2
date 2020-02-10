@@ -143,7 +143,7 @@ Select *,ROW_NUMBER() over(PARTITION BY CITY Order by Sales Desc) as RowNum
 From Customer
 
 
---6.update the Address to ‘INDIRANAGR’ where the city is BANGALORE
+--6.update the Address to â€˜INDIRANAGRâ€™ where the city is BANGALORE
 
 --Solution
 Update CUST_INFO_TABLE 
