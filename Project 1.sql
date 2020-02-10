@@ -1,0 +1,345 @@
+--Sql Project 1/Sabyasachi
+
+--1.Create a database NIKHIL ANALYTICS
+
+create database Nikhil_Analytics
+
+use Nikhil_Analytics
+
+
+--2.Create STUDENT_INFO table with following columns
+--a) STUDENT_ID : should accept maximum of 10 characters , should not accept null values & we must be able to 
+--identify each records uniquely using STUDENT_ID, student id must be automatically generated in the format STD_YEAR_SEQUENCENO 
+--ex: std_2018_01
+--b) NAME : should accept maximum of 20 characters , should not accept null values
+--c) ADDRESS: should accept maximum of 90 characters , should not accept null values
+--d) PHONE_NO : should accept exactly 10 numbers & each digit should be between 0-9, should not accept null values
+--e) EMAIL_ID : should accept maximum of 30 characters & should contain @ , should not accept null values
+--f) QUALIFICATION1: should accept maximum of 50 characters
+--g) QUALIFICATION2: should accept maximum of 50 characters
+--h) EXPERIENCE : should accept years ex: 2.5
+--i) COMPANY NAME : should accept maximum of 50 characters
+--j) COURSE_OPTED1 : should accept maximum of 50 characters, should not accept null values & should only accept following courses: REPORTING ANALYSIS POWER PACK
+--BUSINESS ANALYTICS POWER PACK
+--DATA ANALYTICS POWER PACK
+--DATA SCIENCE MODELLING & MACHINE LEARNING
+--k) COURSE_OPTED2: should accept maximum of 50 characters & only given courses
+--l) COURSE_OPTED3: should accept maximum of 50 characters & only given courses
+--m) ADMISSION_DATE : should accept date value & should not accept null values
+--n) EXPECTED END DATE : should accept date value & automatically update using following data.
+--REPORTING ANALYSIS POWER PACK – 3 MONTHS FROM ADMISSION DATE
+--BUSINESS ANALYTICS POWER PACK – 6 MONTHS FROM ADMISSION DATE
+--DATA ANALYTICS POWER PACK – 7 MONTHS FROM ADMISSION DATE
+--DATA SCIENCE MODELLING & MACHINE LEARNING – 8 MONTHS FROM ADMISSION DATE
+
+
+--Solution
+--Creating Table
+Create Table STUDENT_INFO(
+	Dummy_ID int identity(1,1),
+	STUDENT_ID as Concat('std_','2019','_',Dummy_ID) Persisted Primary Key,
+	NAME varchar(20) Not Null,
+	ADDRESS varchar(90) Not Null,
+	PHONE_NO Bigint Not Null Check (Len(PHONE_NO)=10),
+	EMAIL_ID Varchar(30) Not Null Check (Charindex('@',EMAIL_ID)>1),
+	QUALIFICATION1 Varchar(50),
+	QUALIFICATION2 Varchar(50),
+	EXPERIENCE Float,
+	COMPANY_NAME Varchar(50),
+	COURSE_OPTED1 Varchar(50) Not Null Check
+			(COURSE_OPTED1 In(	
+						'REPORTING ANALYSIS POWER PACK',
+						'BUSINESS ANALYTICS POWER PACK',
+						'DATA ANALYTICS POWER PACK',
+						'DATA SCIENCE MODELLING & MACHINE LEARNING')),
+	COURSE_OPTED2 Varchar(50) Check
+			(COURSE_OPTED2 In(	
+						'REPORTING ANALYSIS POWER PACK',
+						'BUSINESS ANALYTICS POWER PACK',
+						'DATA ANALYTICS POWER PACK',
+						'DATA SCIENCE MODELLING & MACHINE LEARNING')), 
+	COURSE_OPTED3 Varchar(50) Check
+			(COURSE_OPTED3 In(	
+						'REPORTING ANALYSIS POWER PACK',
+						'BUSINESS ANALYTICS POWER PACK',
+						'DATA ANALYTICS POWER PACK',
+						'DATA SCIENCE MODELLING & MACHINE LEARNING')),
+	ADMISSION_DATE Date Not Null,
+	EXPECTED_END_DATE as Dateadd(month,
+		Case 
+			When COURSE_OPTED1 ='REPORTING ANALYSIS POWER PACK' Then 3
+			When COURSE_OPTED1 ='BUSINESS ANALYTICS POWER PACK' Then 6
+			When COURSE_OPTED1 ='DATA ANALYTICS POWER PACK' Then 7
+			When COURSE_OPTED1 ='DATA SCIENCE MODELLING & MACHINE LEARNING' Then 8
+			Else Null
+		End,
+		ADMISSION_DATE)
+	)
+
+
+
+Insert Into STUDENT_INFO 
+	(NAME,ADDRESS,PHONE_NO,EMAIL_ID,COURSE_OPTED1,ADMISSION_DATE)
+	Values('Sabie','xyz',9682942475,'sabie@sahu','BUSINESS ANALYTICS POWER PACK','11/24/2019')
+
+select * from STUDENT_INFO
+
+--2.Create R_marks_info table with following columns
+--a) Student_ID : should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date : should accept date value
+--c) Class_End_Date : should accept date value
+--o) Faculty : should accept maximum of 50 characters , should not accept null values
+--d) Test_1 :
+--e) Test_2 :
+--f) Test_3 :
+--g) Retest1 :
+--h) Retest2 :
+--i) Retest3 :
+
+Create Table R_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	Test_1 Float,
+	Test_2 Float,
+	Test_3 Float,
+	Retest1 Float,
+	Retest2 Float,
+	Retest3 Float
+	)
+
+Insert Into R_marks_info
+Values('std_2019_1',GETDATE(),dateadd(month,3,getdate()),'aaa',2.3,3.6,Null,Null,Null,Null)
+
+
+
+select * from R_marks_info
+
+--3.Create SAS_marks_info table with following columns
+--a) Student_ID: should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) MT-1
+--f) MT-2
+--g) Data_step_test
+--h) MT-3
+--i) Proc_Test
+--j) Base SAS Test
+--k) Retest1
+--l) Retest2
+--m) Retest3
+
+Create Table SAS_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	MT_1 Float,
+	MT_2 Float,
+	Data_step_test Float,
+	MT_3 Float,
+	Proc_Test Float,
+	Base_SAS_Test Float,
+	Retest1 Float,
+	Retest2 Float,
+	Retest3 Float
+	)
+
+--4. Create SQL_marks_info table with following columns
+--a) Student_ID: should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) SQL_test1
+--f) SQL_test2
+--g) Retest1
+--h) Retest2
+
+Create Table SQL_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	SQL_Test_1 Float,
+	SQL_Test_2 Float,
+	Retest1 Float,
+	Retest2 Float
+	)
+
+--5. Create EXCEL_marks_info table with following columns
+--a) Student_ID: should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) Basic_excel_test
+--f) MT1
+--g) Excel_test1
+--h) Retest
+
+Create Table EXCEL_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	Basic_excel_test Float,
+	MT_1 Float,
+	Excel_test1 Float,
+	Retest Float
+	)
+
+--6. Create VBA_marks_info table with following columns
+--a) Student_ID: should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) Function_excel_Test
+--f) Function_vba_test
+--g) Final_test
+--h) Retest1
+
+Create Table VBA_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	Function_excel_Test Float,
+	Function_vba_test Float,
+	Final_test Float,
+	Retest1 Float
+	)
+
+--7. Create TABLEAU_marks_info table with following columns
+--a) Student_ID: should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) MT1
+--f) Test1
+--g) Retest1
+
+Create Table TABLEAU_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	MT1 Float,
+	Test1 Float,
+	Retest1 Float
+	)
+
+--8. Create PYTHON_marks_info table with following columns
+--a) Student_ID: should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) Test1
+--f) Test2
+--g) Retest1
+--h) Retest2
+
+Create Table PYTHON_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	Test1 Float,
+	Test2 Float,
+	Retest1 Float,
+	Retest2 Float
+	)
+
+
+--8. Create ML_marks_info table with following columns
+--a) Student_ID : should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) Test1
+--f) Test2
+--g) Retest
+
+Create Table ML_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	Test1 Float,
+	Test2 Float,
+	Retest1 Float
+	)
+
+
+--9. Create ASAS_marks_info table with following columns
+--a) Student_ID: should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) MT1
+--f) MT2
+--g) Final_test
+--h) Retest
+
+Create Table ASAS_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	MT1 Float,
+	MT2 Float,
+	Final_test Float,
+	Retest Float
+	)
+
+--10.Create FULL_LENGTH_marks_info table with following columns
+--a) Student_ID: should accept maximum of 10 characters, should not accept null values & should create a reference to student_info table
+--b) Class_start_Date
+--c) Class_End_Date
+--d) Faculty
+--e) R_test
+--f) SAS_test
+--g) SQL_test
+--h) Excel_test
+--i) VBA_test
+--j) Python_test
+--k) Tableau_test
+
+Create Table FULL_LENGTH_marks_info(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Class_start_Date date,
+	Class_End_Date date,
+	Faculty Varchar(50) Not Null,
+	R_test Float,
+	SAS_test Float,
+	SQL_test Float,
+	Excel_test Float,
+	VBA_test Float,
+	Python_test Float,
+	Tableau_test Float
+	)
+
+--11.Create Placement_Activity table with following columns
+--a) Column Name
+--b) Student_ID: should accept maximum of 10 characters, should not accept null values &should create a reference to student_info table
+--c) Mock_interview1: should accept maximum of 50 characters
+--d) Mock_interview2: should accept maximum of 50 characters
+--e) Mock_interview3: should accept maximum of 50 characters
+--f) Resume Finalised: should accept maximum of 50 characters
+--g) Profile_Building: should accept maximum of 50 characters
+--h) Certificate_Issued: should accept only YES/NO
+--i) Actual_course_enddate
+
+Create Table Placement_Activity(
+	Student_ID Varchar(21) Not Null Foreign Key References Student_Info(Student_ID),
+	Mock_interview1 Varchar(50),
+	Mock_interview2 Varchar(50),
+	Mock_interview3 Varchar(50),
+	Resume_Finalised Varchar(50),
+	Profile_Building Varchar(50),
+	Certificate_Issued Varchar(3) Check(Certificate_Issued in('YES','NO')),
+	Actual_course_enddate Date
+	)
+
+
+-----------------------------------------PROJECT END----------------------------------------------
